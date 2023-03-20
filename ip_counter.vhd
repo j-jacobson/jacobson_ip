@@ -40,7 +40,7 @@ end entity ip_counter;
 
 architecture RTL of ip_counter is
 
-signal countOut_i : integer := START_VAL; -- internal countOut
+signal countOut_i : integer; -- internal countOut
 
 begin
 
@@ -53,7 +53,7 @@ begin
     if(decrCnt = '1') then
       countOut_i <= countOut_i - DECR_AMT;
     end if;
-    if(clearIn = '1') then
+    if(clearIn = '1' or rst = '1') then
       countOut_i <= START_VAL;
     end if;
 
@@ -67,12 +67,6 @@ begin
     end if;    
   end process;
 
-  output_proc : process
-  begin
-    wait until rising_edge(clk);
-    if((enableIn = '1') and (rst = '0')) then
-      countOut <= countOut_i;
-    end if;
-  end process;
+  countOut <= countOut_i;
 
 end architecture RTL;
