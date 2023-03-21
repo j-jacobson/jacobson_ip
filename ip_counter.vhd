@@ -8,18 +8,17 @@
 -- of a counter.
 --
 -------------------------------------------------
-library ieee;
-  use ieee.std_logic_1164.all;
-  use ieee.std_logic_arith.all;
-  use ieee.std_logic_unsigned.all;
+library ieee;         use ieee.std_logic_1164.all;
+                      use ieee.std_logic_unsigned.all;
+                      use ieee.numeric_std.all;
 
 entity ip_counter is
   generic (
-    INCR_AMT   : integer   := 1;
-    DECR_AMT   : integer   := 1;
+    INCR_AMT   : integer := 1;
+    DECR_AMT   : integer := 1;
 
-    START_VAL  : integer   := 0;
-    STOP_VAL   : integer   := -1;
+    START_VAL  : integer := 0;
+    STOP_VAL   : integer := -1;
 
     LOOP_IN    : std_logic := '1'
   );
