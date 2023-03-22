@@ -14,6 +14,7 @@
 library ieee;         use ieee.std_logic_1164.all;
                       use ieee.std_logic_unsigned.all;
                       use ieee.numeric_std.all;
+library jacobson_ip;
 
 entity vga_counter is
   generic (
@@ -57,7 +58,7 @@ architecture RTL of vga_counter is
   signal inVisibleArea_s : std_logic;
 begin
 
-  hsync_counter_inst : entity work.ip_counter(RTL)
+  hsync_counter_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
     START_VAL  => 0, -- start at 0
     STOP_VAL   => HSync_Front + HSync_Visible + HSync_Back + HSync_SyncP,
@@ -74,7 +75,7 @@ begin
     doneOut  => hsyncLineDone_s
   );
 
-  vsync_counter_inst : entity work.ip_counter(RTL)
+  vsync_counter_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
     START_VAL  => 0, -- start at 0
     STOP_VAL   => VSync_Front + VSync_Visible + VSync_Back + VSync_SyncP,
