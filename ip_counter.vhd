@@ -43,27 +43,32 @@ signal countOut_i : integer; -- internal countOut
 
 begin
 
-  counter_proc : process
+  counter_proc : process(clk, rst)
   begin
-    wait until rising_edge(clk);
-    if(incrCnt = '1') then
-      countOut_i <= countOut_i + INCR_AMT;
-    end if;
-    if(decrCnt = '1') then
-      countOut_i <= countOut_i - DECR_AMT;
-    end if;
-    if(clearIn = '1' or rst = '1') then
+    if(rst = '1') then
       countOut_i <= START_VAL;
     end if;
 
-    if(countOut_i = STOP_VAL) then
-      doneOut <= '1';
-      if(LOOP_IN = '1') then
+    if(rising_edge(clk)) then
+      if(incrCnt = '1') then
+        countOut_i <= countOut_i + INCR_AMT;
+      end if;
+      if(decrCnt = '1') then
+        countOut_i <= countOut_i - DECR_AMT;
+      end if;
+      if(clearIn = '1') then
         countOut_i <= START_VAL;
       end if;
-    else
-      doneOut <= '0';
-    end if;    
+
+      if(countOut_i = STOP_VAL) then
+        doneOut <= '1';
+        if(LOOP_IN = '1') then
+          countOut_i <= START_VAL;
+        end if;
+      else
+        doneOut <= '0';
+      end if;
+    end if;
   end process;
 
   countOut <= countOut_i;

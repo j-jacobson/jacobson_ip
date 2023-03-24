@@ -86,7 +86,7 @@ begin
     rst      => rstIn,
     clearIn  => '0', -- rst will take car of this (?)
     enableIn => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
-    incrCnt  => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
+    incrCnt  => '1', -- when a horizontal line is done, increment the vertical counter
     decrCnt  => '0', -- we will only be counting up
     countOut => vsyncCnt_s,
     doneOut  => vsyncLineDone_s
