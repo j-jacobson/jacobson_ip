@@ -49,7 +49,7 @@ begin
       countOut_i <= START_VAL;
     end if;
 
-    if(rising_edge(clk)) then
+    if(rising_edge(clk) and (enableIn = '1') and (rst = '0')) then
       if(incrCnt = '1') then
         countOut_i <= countOut_i + INCR_AMT;
       end if;
