@@ -47,10 +47,12 @@ architecture RTL of vga_counter is
   -- HSync
   signal hsyncCnt_s      : integer;
   signal hsyncLineDone_s : std_logic;
+  signal HSync_s         : std_logic;
 
   -- VSync
   signal vsyncCnt_s      : integer;
   signal vsyncLineDone_s : std_logic;
+  signal VSync_s         : std_logic;
 
   -- Helper signals
   signal hVisible_s      : std_logic;
@@ -86,7 +88,7 @@ begin
     rst      => rstIn,
     clearIn  => '0', -- rst will take car of this (?)
     enableIn => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
-    incrCnt  => '1', -- when a horizontal line is done, increment the vertical counter
+    incrCnt  => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
     decrCnt  => '0', -- we will only be counting up
     countOut => vsyncCnt_s,
     doneOut  => vsyncLineDone_s
@@ -94,21 +96,22 @@ begin
 
   -- syncOutput : set sync pulse
   -- Horizontal Sync
-  HSync <= '1' when ((hsyncCnt_s > HSync_Front + HSync_Visible) and (hsyncCnt_s < HSync_Front + HSync_Visible + HSync_SyncP)) else '0';
+  HSync_s <= '0' when ((hsyncCnt_s >= HSync_Front + HSync_Visible) and (hsyncCnt_s < HSync_Front + HSync_Visible + HSync_SyncP)) else '1';
   -- Vertical Sync
-  VSync <= '1' when ((vsyncCnt_s > VSync_Front + VSync_Visible) and (vsyncCnt_s < VSync_Front + VSync_Visible + VSync_SyncP)) else '0';
+  VSync_s <= '0' when ((HSync_s = '0') and (vsyncCnt_s >= VSync_Front + VSync_Visible) and (vsyncCnt_s < VSync_Front + VSync_Visible + VSync_SyncP)) else '1';
 
   -- convertToCartesian : make the xValue and yValue easier to work with by other programs.
-  -- In visible horizontal area?
-  hVisible_s <= '1' when ((hsyncCnt_s > HSync_Front) and (hsyncCnt_s < HSync_Front + HSync_Visible)) else '0';
+  -- In visible horizontal
+  hVisible_s <= '1' when (hsyncCnt_s < HSync_Visible) else '0';
   -- In visible vertical area?
-  vVisible_s <= '1' when ((vsyncCnt_s > VSync_Front) and (vsyncCnt_s < VSync_Front + VSync_Visible)) else '0';
+  vVisible_s <= '1' when (vsyncCnt_s < VSync_Visible) else '0';
   -- inVisibleArea?
   inVisibleArea_s <= '1' when ((hVisible_s = '1') and (vVisible_s = '1')) else '0';
 
-  -- remove the front door from the count, so the coordinate starts at (0, 0).
-  xValue <= std_logic_vector(to_unsigned((hsyncCnt_s - HSync_Front - 1), xValue'length)) when inVisibleArea_s = '1' else (others => '0');
-  yValue <= std_logic_vector(to_unsigned((vsyncCnt_s - VSync_Front - 1), yValue'length)) when inVisibleArea_s = '1' else (others => '0');
-
+  -- Output pixel count
+  xValue <= std_logic_vector(to_unsigned((hsyncCnt_s), xValue'length)) when inVisibleArea_s = '1' and (hsyncCnt_s >= 0) else (others => '0');
+  yValue <= std_logic_vector(to_unsigned((vsyncCnt_s), yValue'length)) when inVisibleArea_s = '1' and (vsyncCnt_s >= 0) else (others => '0');
+  HSync  <= HSync_s;
+  VSync  <= VSync_s;
   inVisibleArea <= inVisibleArea_s;
 end architecture RTL;

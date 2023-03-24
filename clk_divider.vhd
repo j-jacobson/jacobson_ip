@@ -46,7 +46,7 @@ begin
     enableIn => '1',
     incrCnt  => '1',
     decrCnt  => '0', -- we will only be counting up
-    countOut => count_s, -- probably don't need
+    countOut => count_s,
     doneOut  => done_s
   );
 
