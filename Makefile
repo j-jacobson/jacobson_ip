@@ -15,7 +15,11 @@ LIB_DIR  = ../lib
 compile: ./*
 	cd ../ && \
 	vcom -work lib/jacobson_ip \
-	    jacobson_ip/*.vhd
+	    jacobson_ip/ip_counter.vhd \
+		jacobson_ip/vga_counter.vhd \
+		jacobson_ip/vga_driver.vhd \
+		jacobson_ip/clk_divider.vhd \
+
 
 # Delete the library using vdel
 clean:

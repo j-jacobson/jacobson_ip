@@ -15,7 +15,6 @@ library ieee;         use ieee.std_logic_1164.all;
 entity ip_counter is
   generic (
     INCR_AMT   : integer := 1;
-    DECR_AMT   : integer := 1;
 
     START_VAL  : integer := 0;
     STOP_VAL   : integer := -1;
@@ -25,12 +24,7 @@ entity ip_counter is
   port (
     clk      : in    std_logic;
     rst      : in    std_logic;
-
-    clearIn  : in    std_logic;
     enableIn : in    std_logic;
-
-    incrCnt  : in    std_logic;
-    decrCnt  : in    std_logic;
 
     countOut :   out integer;
     doneOut  :   out std_logic
@@ -40,37 +34,36 @@ end entity ip_counter;
 architecture RTL of ip_counter is
 
 signal countOut_i : integer; -- internal countOut
+signal doneOut_i  : std_logic := '0';
 
 begin
 
-  counter_proc : process(clk, rst)
+  counter_proc : process(clk, rst, enableIn)
   begin
     if(rst = '1') then
       countOut_i <= START_VAL;
-    end if;
-
-    if(rising_edge(clk) and (enableIn = '1') and (rst = '0')) then
-      if(incrCnt = '1') then
-        countOut_i <= countOut_i + INCR_AMT;
-      end if;
-      if(decrCnt = '1') then
-        countOut_i <= countOut_i - DECR_AMT;
-      end if;
-      if(clearIn = '1') then
-        countOut_i <= START_VAL;
-      end if;
-
+    elsif(rising_edge(clk) and (enableIn = '1')) then
       if(countOut_i = STOP_VAL) then
-        doneOut <= '1';
-        if(LOOP_IN = '1') then
-          countOut_i <= START_VAL;
-        end if;
+        countOut_i <= START_VAL;
       else
-        doneOut <= '0';
+        countOut_i <= countOut_i + 1;
+      end if;
+    end if;
+  end process;
+
+
+  done_proc : process(clk, enableIn)
+  begin
+    if(rising_edge(clk) and (enableIn = '1')) then
+      if(countOut_i = STOP_VAL) then
+        doneOut_i <= '1';
+      else
+        doneOut_i <= '0';
       end if;
     end if;
   end process;
 
   countOut <= countOut_i;
+  doneOut  <= doneOut_i;
 
 end architecture RTL;
