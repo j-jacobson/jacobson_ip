@@ -17,6 +17,7 @@ compile: ./*
 	vcom -work lib/jacobson_ip \
 	    jacobson_ip/ip_counter.vhd \
 		jacobson_ip/vga_counter.vhd \
+		jacobson_ip/vga_driver.vhd \
 		jacobson_ip/clk_divider.vhd \
 
 
