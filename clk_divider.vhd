@@ -35,17 +35,14 @@ begin
 
   clk_div_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
-    START_VAL  => 0, -- start at 0
+    START_VAL  => 0,
     STOP_VAL   => COUNT-1,
     LOOP_IN    => '1'
   )
   port map (
     clk      => clkIn,
     rst      => rstIn,
-    clearIn  => '0',
     enableIn => '1',
-    incrCnt  => '1',
-    decrCnt  => '0', -- we will only be counting up
     countOut => count_s,
     doneOut  => done_s
   );

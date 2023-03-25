@@ -45,14 +45,12 @@ end entity vga_counter;
 architecture RTL of vga_counter is
 
   -- HSync
-  signal hsyncCnt_s      : integer;
+  signal hsyncCnt_s      : integer := 0;
   signal hsyncLineDone_s : std_logic;
-  signal HSync_s         : std_logic;
 
   -- VSync
-  signal vsyncCnt_s      : integer;
+  signal vsyncCnt_s      : integer := 0;
   signal vsyncLineDone_s : std_logic;
-  signal VSync_s         : std_logic;
 
   -- Helper signals
   signal hVisible_s      : std_logic;
@@ -62,48 +60,41 @@ begin
 
   hsync_counter_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
-    START_VAL  => 0, -- start at 0
-    STOP_VAL   => HSync_Front + HSync_Visible + HSync_Back + HSync_SyncP,
+    START_VAL  => 0,
+    STOP_VAL   => HSync_Front + HSync_Visible + HSync_Back + HSync_SyncP - 1,
     LOOP_IN    => '1'
   )
   port map (
-    clk      => clkIn, -- might have to be a different clock
+    clk      => clkIn,
     rst      => rstIn,
-    clearIn  => '0', -- no need to clear, other than in reset
-    enableIn => enableIn,
-    incrCnt  => enableIn,
-    decrCnt  => '0', -- we will only be counting up
+    enableIn => '1',
     countOut => hsyncCnt_s,
     doneOut  => hsyncLineDone_s
   );
 
   vsync_counter_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
-    START_VAL  => 0, -- start at 0
-    STOP_VAL   => VSync_Front + VSync_Visible + VSync_Back + VSync_SyncP,
+    START_VAL  => 0,
+    STOP_VAL   => VSync_Front + VSync_Visible + VSync_Back + VSync_SyncP - 1,
     LOOP_IN    => '1'
   )
   port map (
-    clk      => clkIn, -- might have to be a different clock
+    clk      => clkIn,
     rst      => rstIn,
-    clearIn  => '0', -- rst will take car of this (?)
     enableIn => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
-    incrCnt  => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
-    decrCnt  => '0', -- we will only be counting up
     countOut => vsyncCnt_s,
     doneOut  => vsyncLineDone_s
   );
 
   -- syncOutput : set sync pulse
   -- Horizontal Sync
-  HSync_s <= '0' when ((hsyncCnt_s >= HSync_Front + HSync_Visible) and (hsyncCnt_s < HSync_Front + HSync_Visible + HSync_SyncP)) else '1';
+  HSync <= '1' when ((hsyncCnt_s < HSync_Front + HSync_Visible) or (hsyncCnt_s >= HSync_Front + HSync_Visible + HSync_SyncP) or (rstIn = '1')) else '0';
   -- Vertical Sync
-  VSync_s <= '0' when ((HSync_s = '0') and (vsyncCnt_s >= VSync_Front + VSync_Visible) and (vsyncCnt_s < VSync_Front + VSync_Visible + VSync_SyncP)) else '1';
+  VSync <= '1' when ((vsyncCnt_s < VSync_Front + VSync_Visible) or (vsyncCnt_s >= VSync_Front + VSync_Visible + VSync_SyncP) or (rstIn = '1')) else '0';
 
-  -- convertToCartesian : make the xValue and yValue easier to work with by other programs.
-  -- In visible horizontal
+  -- In visible horizontal?
   hVisible_s <= '1' when (hsyncCnt_s < HSync_Visible) else '0';
-  -- In visible vertical area?
+  -- In visible vertical?
   vVisible_s <= '1' when (vsyncCnt_s < VSync_Visible) else '0';
   -- inVisibleArea?
   inVisibleArea_s <= '1' when ((hVisible_s = '1') and (vVisible_s = '1')) else '0';
@@ -111,7 +102,5 @@ begin
   -- Output pixel count
   xValue <= std_logic_vector(to_unsigned((hsyncCnt_s), xValue'length)) when inVisibleArea_s = '1' and (hsyncCnt_s >= 0) else (others => '0');
   yValue <= std_logic_vector(to_unsigned((vsyncCnt_s), yValue'length)) when inVisibleArea_s = '1' and (vsyncCnt_s >= 0) else (others => '0');
-  HSync  <= HSync_s;
-  VSync  <= VSync_s;
   inVisibleArea <= inVisibleArea_s;
 end architecture RTL;
