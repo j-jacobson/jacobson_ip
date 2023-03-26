@@ -34,26 +34,15 @@ entity vga_driver is
     rstIn         : in    std_logic;
     enableIn      : in    std_logic;
 
-    RED           :   out std_logic_vector(((VGA_DEPTH/3)-1) downto 0);
-    GREEN         :   out std_logic_vector(((VGA_DEPTH/3)-1) downto 0);
-    BLUE          :   out std_logic_vector(((VGA_DEPTH/3)-1) downto 0);
-
-    RED_RTN       : in    std_logic;
-    GREEN_RTN     : in    std_logic;
-    BLUE_RTN      : in    std_logic;
-
-    ID            : in    std_logic_vector (0 to 3);
+    inVisibleArea :   out std_logic;
+    xCoord        :   out std_logic_vector(31 downto 0); -- horizontal position
+    yCoord        :   out std_logic_vector(31 downto 0); -- veritical position
     HSync         :   out std_logic;
     VSync         :   out std_logic
   );
 end entity vga_driver;
 
 architecture RTL of vga_driver is
-
-signal inVisibleArea : std_logic;
-signal xValue        : std_logic_vector(31 downto 0); -- horizontal position
-signal yValue        : std_logic_vector(31 downto 0); -- veritical position
-signal pixel_s       : std_logic_vector(2 downto 0);
 
 begin
 
@@ -74,16 +63,10 @@ begin
       rstIn         => rstIn,
       enableIn      => enableIn,
       inVisibleArea => inVisibleArea,
-      xValue        => xValue,
-      yValue        => yValue,
+      xCoord        => xCoord,
+      yCoord        => yCoord,
       HSync         => HSync,
       VSync         => VSync
     );
-
-  pixel_s <= xValue(8 downto 6) when (inVisibleArea = '1') else (others => '0');
-
-  RED   <= (others => '1') when pixel_s(0) = '1' else (others => '0');
-  GREEN <= (others => '1') when pixel_s(1) = '1' else (others => '0');
-  BLUE  <= (others => '1') when pixel_s(2) = '1' else (others => '0');
 
 end architecture RTL;

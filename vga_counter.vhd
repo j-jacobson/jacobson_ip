@@ -34,8 +34,8 @@ entity vga_counter is
     enableIn      : in    std_logic;
 
     inVisibleArea :   out std_logic;
-    xValue        :   out std_logic_vector(31 downto 0); -- horizontal position
-    yValue        :   out std_logic_vector(31 downto 0); -- veritical position
+    xCoord        :   out std_logic_vector(31 downto 0); -- horizontal position
+    yCoord        :   out std_logic_vector(31 downto 0); -- veritical position
 
     HSync         :   out std_logic;
     VSync         :   out std_logic
@@ -100,7 +100,7 @@ begin
   inVisibleArea_s <= '1' when ((hVisible_s = '1') and (vVisible_s = '1')) else '0';
 
   -- Output pixel count
-  xValue <= std_logic_vector(to_unsigned((hsyncCnt_s), xValue'length)) when inVisibleArea_s = '1' and (hsyncCnt_s >= 0) else (others => '0');
-  yValue <= std_logic_vector(to_unsigned((vsyncCnt_s), yValue'length)) when inVisibleArea_s = '1' and (vsyncCnt_s >= 0) else (others => '0');
+  xCoord <= std_logic_vector(to_unsigned((hsyncCnt_s), xCoord'length)) when inVisibleArea_s = '1' and (hsyncCnt_s >= 0) else (others => '0');
+  yCoord <= std_logic_vector(to_unsigned((vsyncCnt_s), yCoord'length)) when inVisibleArea_s = '1' and (vsyncCnt_s >= 0) else (others => '0');
   inVisibleArea <= inVisibleArea_s;
 end architecture RTL;
