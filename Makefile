@@ -19,7 +19,7 @@ compile: ./*
 		jacobson_ip/vga_counter.vhd \
 		jacobson_ip/vga_driver.vhd \
 		jacobson_ip/clk_divider.vhd \
-
+    jacobson_ip/test_graphics.vhd
 
 # Delete the library using vdel
 clean:
