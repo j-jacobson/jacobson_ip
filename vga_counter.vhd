@@ -60,28 +60,28 @@ begin
 
   hsync_counter_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
-    START_VAL  => 0,
-    STOP_VAL   => HSync_Front + HSync_Visible + HSync_Back + HSync_SyncP - 1,
     LOOP_IN    => '1'
   )
   port map (
     clk      => clkIn,
     rst      => rstIn,
     enableIn => '1',
+    startVal => 0,
+    stopVal  => HSync_Front + HSync_Visible + HSync_Back + HSync_SyncP - 1,
     countOut => hsyncCnt_s,
     doneOut  => hsyncLineDone_s
   );
 
   vsync_counter_inst : entity jacobson_ip.ip_counter(RTL)
   generic map (
-    START_VAL  => 0,
-    STOP_VAL   => VSync_Front + VSync_Visible + VSync_Back + VSync_SyncP - 1,
     LOOP_IN    => '1'
   )
   port map (
     clk      => clkIn,
     rst      => rstIn,
     enableIn => hsyncLineDone_s, -- when a horizontal line is done, increment the vertical counter
+    startVal => 0,
+    stopVal  => VSync_Front + VSync_Visible + VSync_Back + VSync_SyncP - 1,
     countOut => vsyncCnt_s,
     doneOut  => vsyncLineDone_s
   );
