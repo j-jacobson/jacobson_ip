@@ -1,15 +1,17 @@
 -------------------------------------------------
--- filename : pong_logic.vhd
--- date     : 26 Mar 2023
+-- filename : sound_driver.vhd
+-- date     : 01 Apr 2023
 -- Author   : Jonathan L. Jacobson
 -- Email    : jacobson.jonathan.1@gmail.com
 --
--- This file is the game logic 
+-- This file is the sound driver 
 -- for the implementation of Pong 
 -- on the Nexys A7 development board.
+-- Will later be updated to be a 
+-- more general sound driver.
 -- 
 -- Components: 
---             Game Logic
+--             Sound Driver
 --             
 ---------------------------------------------------
 library ieee;         use ieee.std_logic_1164.all;
@@ -67,7 +69,7 @@ begin
     enableIn => timer_start,
 
     startVal => 0,
-    stopVal  => 400000, -- 25MHz / ? = ?s
+    stopVal  => 400000,  -- 400 000 clks / 25 000 000 clks/s = 16ns
 
     countOut => open,
     doneOut  => timer_done
