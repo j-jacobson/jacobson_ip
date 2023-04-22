@@ -20,7 +20,8 @@ compile: ./*
 		jacobson_ip/vga_driver.vhd \
 		jacobson_ip/clk_divider.vhd \
     jacobson_ip/test_graphics.vhd \
-		jacobson_ip/sound_driver.vhd
+		jacobson_ip/sound_driver.vhd \
+		jacobson_ip/pixel_pack.vhd
 
 # Delete the library using vdel
 clean:
