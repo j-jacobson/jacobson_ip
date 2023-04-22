@@ -36,16 +36,17 @@ package pixel_pack is
   constant LARGE      : integer := 150;
   constant FULL       : integer := 480;
 
+  -- single coordinate (x)
   subtype coord_t       is std_logic_vector(COORD_LEN-1 downto 0); -- leave coordinate depth open
-  -- array of coords
+  -- array of coords (x0, x1, ... , xN-1 , xN)
   type    coords_t      is array (natural range <>) of coord_t;
-  -- array of arrays of coords, for the 2 bumpers and the 7 segment displays
+  -- array of arrays of coords ((x0, x1, x2, x3), ... , (z0, z1, z2, z3))
   type    multiCoords_t is array (natural range <>) of coords_t(0 to 3);
   -- int to SLV function
   function toSLV(int: integer) return std_logic_vector;
-  -- function to see if a pixel is within a range (x0, x1, y0, y1)
+  -- function to see if a pixel is within a plane (x0, x1, y0, y1)
   function inCoords(x, y: coord_t;  coords : coords_t(0 to 3)) return boolean;
-  -- function to shift coords of an object
+  -- function to shift coords of a plane
   function shiftCoords(direction: std_logic_vector(0 to 3); coords : coords_t(0 to 3)) return coords_t;
   -- function to turn an integer into a picture of pixels
   function intToPixels(int: integer; bounds: coords_t(0 to 3)) return multiCoords_t;
@@ -79,6 +80,19 @@ package body pixel_pack is
       isIn := true;
     end if;
 
+    return isIn;
+  end function;
+
+  function in5Planes(x, y: coord_t; mcoords: multiCoords_t(0 to 4)) return boolean is
+    variable isIn : boolean := false;
+  begin
+    if(inCoords(x, y, mcoords(0)) or
+       inCoords(x, y, mcoords(1)) or
+       inCoords(x, y, mcoords(2)) or
+       inCoords(x, y, mcoords(3)) or
+       inCoords(x, y, mcoords(4))) then
+      isIn := true;
+    end if;
     return isIn;
   end function;
 
